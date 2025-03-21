@@ -50,18 +50,17 @@ class ExcelProcessor:
             data = self.data_list[i]
             if '标题' in data and data['标题']:
                 pass
-            elif 'total' in data and int(data['total']) == 0:
-                print('搜索不到内容')
+            elif 'error' in data and data['error'] == '搜索内容为空':
                 pass
             else:
-                print('{}/{} {}'.format(i+1, len(self.data_list), data))
+                print('{}/{} '.format(i+1, len(self.data_list)), end='')
                 douban = DouBan(self.headers)
                 self.data_list[i] = douban.search_by_dict(data)
 
                 try:
                     with open(self.json_path, 'w', encoding='utf-8') as f:
                         json.dump(self.data_list, f, ensure_ascii=False, indent=4)
-                    print('\r休息', end='', flush=True)
+                    print('\r休息  ', end='', flush=True)
                     time.sleep(random.randint(self.waite_time[0], self.waite_time[1]))
                 except Exception as e:
                     print(f"处理记录时出错: {str(e)}")

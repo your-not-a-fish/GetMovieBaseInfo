@@ -74,13 +74,14 @@ class DouBan(object):
                 # 将提取到的JSON字符串转换为Python对象
                 data = json.loads(json_str)
                 for d in data['items']:
-                    all_title_str = d['title']
-                    space_index = all_title_str.find(' ')
-                    title = all_title_str[0: space_index].replace('\u200e', '')
-                    if title:
-                        year = all_title_str[-5: -1]
-                        info = {'title': title, 'year': year, 'id': d['id']}
-                        self.search_list.append(info)
+                    if 'title' in d:
+                        all_title_str = d['title']
+                        space_index = all_title_str.find(' ')
+                        title = all_title_str[0: space_index].replace('\u200e', '')
+                        if title:
+                            year = all_title_str[-5: -1]
+                            info = {'title': title, 'year': year, 'id': d['id']}
+                            self.search_list.append(info)
                 # print(self.search_list)
                 if self.search_list:
                     self.total = len(self.search_list)
@@ -93,7 +94,7 @@ class DouBan(object):
         """从搜索出的结果数据中选择一个最相似的,2种情况，3种结果 """
         new_title = remove_symbols_and_spaces(input_title)
         result_new_title_list = [remove_symbols_and_spaces(content['title']) for content in self.search_list]
-        year_list = [int(y['year']) for y in self.search_list]
+        year_list = [int(y['year']) for y in self.search_list if y['year'].isdigit()]
         adjacent_year_list = [[i + self.add_year, i, i - self.add_year] for i in year_list]
         # one_adjacent_year_list = [item for sublist in adjacent_year_list for item in sublist]
         counts = result_new_title_list.count(new_title)
@@ -161,7 +162,7 @@ class DouBan(object):
     def get_html_content_by_url(self, url):
         res = requests.get(url=url, headers=self.headers, timeout=10)
         if res.status_code not in [200, 201]:
-            raise Exception(f'status_code {res.status_code}')
+            raise Exception(f'status_code: {res.status_code}')
         if '有异常请求从你的 IP 发出，点击下方按钮继续' in res.text:
             raise Exception('有异常请求从你的 IP 发出，点击下方按钮继续（请登录豆瓣后，填写相关的User-Agent 和 Cookie）')
         return res.text
@@ -239,7 +240,12 @@ class DouBan(object):
         elif 'url' in data_dict and data_dict['url']:
             return self.search_by_url(data_dict['url'])
         elif 'search_title' in data_dict:
-            return self.search_by_title(data_dict['search_title'], year=data_dict['year'])
+            if 'year' in data_dict and data_dict['year']:
+                self.movie_info['year'] = data_dict['year']
+                return self.search_by_title(data_dict['search_title'], year=data_dict['year'])
+            else:
+                return self.search_by_title(data_dict['search_title'])
         else:
             print(f'error: 格式不正确')
             return data_dict.update({'error': '格式不正确'})
+
