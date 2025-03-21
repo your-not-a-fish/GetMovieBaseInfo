@@ -205,8 +205,6 @@ class DouBan(object):
             person = items[2].get_text(strip=True)
             award_list.append(f"【{festival} {category} {person}】")
         self.movie_info['获奖'] = '/'.join(award_list)
-        if self.notes and'标题不同 选择第一个' in self.notes and self.movie_info['search_title'] in self.movie_info['又名']:
-            self.notes = ''
 
     def search_by_title(self, input_title, year=None):
         """通过标题的方式，来获取id，在转换成url,最后解析成字典数据"""
@@ -221,7 +219,7 @@ class DouBan(object):
             self.movie_info['total'] = self.total
             self.movie_info['notes'] = self.notes
         except Exception as e:
-            self.movie_info['error'] = e
+            self.movie_info['error'] = str(e)
             print(f'error: {e}')
         return self.movie_info
 
@@ -231,7 +229,7 @@ class DouBan(object):
             html_content = self.get_html_content_by_url(url)
             self.extract_movie_info(html_content)
         except Exception as e:
-            self.movie_info['error'] = e
+            self.movie_info['error'] = str(e)
             print(f'error: {e}')
         return self.movie_info
 
@@ -245,4 +243,3 @@ class DouBan(object):
         else:
             print(f'error: 格式不正确')
             return data_dict.update({'error': '格式不正确'})
-
