@@ -21,40 +21,40 @@ headers = {
 
 ### 示例1：几种常规的查询方式及匹配方案
 from douban import DouBan
-# 创建豆瓣查询实例
+创建豆瓣查询实例
 douban = DouBan(headers)
 
-# 通过标题搜索（如果存在多个同名电影，将选择第一个并给出提示notes会提示）
+通过标题搜索（如果存在多个同名电影，将选择第一个并给出提示notes会提示）
 info1 = douban.search_by_title('罗马假日')
 print(info1)
 
-# 通过标题和年份搜索（会通过年份来精准选择）
+通过标题和年份搜索（会通过年份来精准选择）
 info2 = douban.search_by_title('罗马假日', year=1987)
 print(info2)
 
-# 搜索的内容没有该名称，而是别名，提示会取消
+搜索的内容没有该名称，而是别名，提示会取消
 info3 = douban.search_by_title('OK镇大决斗')
 print(info3)
 
-# 搜索的内容没有结果
+搜索的内容没有结果
 info4 = douban.search_by_title('战狼大战黑金刚')
 print(info4)
 # {'search_title': '战狼大战黑金刚', 'total': -1, 'notes': None}
 
-# 通过url获取信息
+通过url获取信息
 info5 = douban.search_by_url('https://movie.douban.com/subject/1293839/')
 print(info5)
 
 
 ## 示例2：处理excel表格，第一列为标题，第二列为年代（可以为空），不要设置表头，处理好后会生成 example_hand.xlsx
 from excel_processor import ExcelProcessor
-# 创建 Excel 处理器实例
+创建 Excel 处理器实例
 processor = ExcelProcessor('example.xlsx', headers)
-# 处理 Excel 文件
+处理 Excel 文件
 processor.process()
-# 程序先把excel转换成同名的json文件，抓取一个保存一个
-# 如果有几个数据没抓到，再次执行即可
-# 再次执行，查询过、搜索数据为空的会pass
+程序先把excel转换成同名的json文件，抓取一个保存一个
+如果有几个数据没抓到，再次执行即可
+再次执行，查询过、搜索数据为空的会pass
 
 
 ## 注意事项
