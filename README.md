@@ -19,7 +19,9 @@ headers = {
 }
 
 
-# 示例1：几种常规的查询方式及匹配方案
+示例1：几种常规的查询方式及匹配方案
+
+
 from douban import DouBan
 创建豆瓣查询实例
 douban = DouBan(headers)
@@ -46,7 +48,8 @@ info5 = douban.search_by_url('https://movie.douban.com/subject/1293839/')
 print(info5)
 
 
-# 示例2：处理excel表格，第一列为标题，第二列为年代（可以为空），不要设置表头，处理好后会生成 example_hand.xlsx
+示例2：处理excel表格，第一列为标题，第二列为年代（可以为空），不要设置表头，处理好后会生成 example_hand.xlsx
+
 from excel_processor import ExcelProcessor
 创建 Excel 处理器实例
 processor = ExcelProcessor('example.xlsx', headers)
