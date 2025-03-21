@@ -22,20 +22,24 @@ class ExcelProcessor:
             with open(self.json_path, 'r', encoding='utf-8') as f:
                 self.data_list = json.load(f)
         else:
-            df = pd.read_excel(self.excel_path, header=None, usecols=[0, 1])
-            # 遍历每一行数据
-            for index, row in df.iterrows():
-                title = row[0]
-                year_str = row[1]
-                # 检查year是否是4位数的整数
-                try:
-                    year = int(year_str)
-                    if not (1500 <= year <= 3000):
-                        year = None
-                except (ValueError, TypeError):
-                    year = None
-                # 添加到结果列表
-                self.data_list.append({'search_title': title, 'year': year})
+            try:
+                # 尝试读取文件的前两列，并设置列名
+                df = pd.read_excel(self.excel_path, usecols=[0, 1], names=['search_title', 'year'], header=None)
+            except ValueError:
+                # 如果第二列不存在，则只读取第一列
+                df = pd.read_excel(self.excel_path, usecols=[0], names=['search_title'], header=None)
+
+            # 如果只读取了一列，添加一个空的'year'列
+            if 'year' not in df.columns:
+                df['year'] = ''
+            # 将DataFrame转换为字典列表，并处理可能的缺失值
+            self.data_list = df.to_dict(orient='records')
+
+            # 确保所有'year'字段不是NaN，如果是则替换为空字符串
+            for entry in self.data_list:
+                if pd.isna(entry.get('year')):
+                    entry['year'] = ''
+
             with open(self.json_path, 'w', encoding='utf-8') as f:
                 json.dump(self.data_list, f, ensure_ascii=False, indent=2)
             print(f"Excel文件已成功转换为JSON: {self.json_path}")
@@ -57,6 +61,7 @@ class ExcelProcessor:
                 try:
                     with open(self.json_path, 'w', encoding='utf-8') as f:
                         json.dump(self.data_list, f, ensure_ascii=False, indent=4)
+                    print('\r休息', end='', flush=True)
                     time.sleep(random.randint(self.waite_time[0], self.waite_time[1]))
                 except Exception as e:
                     print(f"处理记录时出错: {str(e)}")
